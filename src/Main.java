@@ -74,7 +74,12 @@ public class Main {
     }
 
     private static void handleSaveFile() {
-
+        try {
+            fileManager.saveFile();
+            System.out.println("Файл успешно сохранен");
+        } catch (IOException e){
+            System.out.println("Ошибка записи файла: " + e.getMessage());
+        }
     }
 
     private static void handleSaveFileAs(Scanner scanner) {
