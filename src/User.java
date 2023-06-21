@@ -32,4 +32,12 @@ public class User {
     public String getAddress() {
         return address;
     }
+
+    public void print(){
+        System.out.println("ФИО = " + name +"\n" +
+                "Возраст = " + age + "\n" +
+                "Телефон = " + phoneNumber + "\n" +
+                "Пол = " + sex + "\n" +
+                "Адрес = " + address);
+    }
 }

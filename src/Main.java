@@ -62,11 +62,40 @@ public class Main {
     }
 
     private static void handleSearch(Scanner scanner) {
-
+        System.out.println("Введите ФИО");
+        String name = scanner.nextLine();
+        User user = fileManager.searchUser(name);
+        if (user != null) {
+            System.out.println("Найден пользователь:");
+            user.print();
+        }
+        else {
+            System.out.println("Пользователь не найден");
+        }
     }
 
     private static void handleAddUser(Scanner scanner) {
+        System.out.println("Введите имя");
+        String name = scanner.nextLine();
 
+        System.out.println("Введите возраст");
+        int age = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.println("Введите телефон");
+        String phoneNumber = scanner.nextLine();
+
+        System.out.println("Введите пол: MALE или FEMALE");
+        String sex = scanner.nextLine().toUpperCase();
+
+        System.out.println("Введите адрес");
+        String address = scanner.nextLine();
+        try{
+            fileManager.addUser(name, age, phoneNumber, sex, address);
+            System.out.println("Пользователь создан");
+        }catch (Exception e){
+            System.out.printf("Ошибка:" + e.getMessage());
+        }
     }
 
     private static void handleRemoveUser(Scanner scanner) {

@@ -85,4 +85,23 @@ public class FileManager {
         }
     }
 
+    public User searchUser(String name) {
+        return userData.getUser(name);
+    }
+
+    public void addUser(String name, int age, String phoneNumber, String sex, String address)throws Exception {
+        if (name.isEmpty() || age <= 0 || phoneNumber.isEmpty() || sex.isEmpty() || address.isEmpty() ||
+        name.contains(";") || phoneNumber.contains(";") || sex.contains(";") || address.contains(";")){
+            throw new Exception("Неверный ввод!");
+        }
+        if(!(sex.equals("MALE") || sex.equals("FEMALE"))){
+            throw new Exception("Неверный формат поля \"ПОЛ\""); //добавить своё исключение
+        }
+        User user = new User(name, age, phoneNumber, sex, address);
+        userData.addUser(user);
+    }
+
+    public void removeUser(String name) {
+        userData.removeUser(name);
+    }
 }
