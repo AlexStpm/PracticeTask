@@ -14,7 +14,8 @@ public class Main {
                     "4. REMOVEUSER\n" +
                     "5. SAVEFILE\n" +
                     "6. SAVEFILEAS\n" +
-                    "7. EXIT\n" +
+                    "7. NEWFILE\n" +
+                    "8. EXIT\n" +
                     "Ваш выбор: ");
 
             int choice = scanner.nextInt();
@@ -40,6 +41,9 @@ public class Main {
                     handleSaveFileAs(scanner);
                     break;
                 case 7:
+                    handleCreateNewFile(scanner);
+                    break;
+                case 8:
                     return;
                 default:
                     System.out.println("Некорректный выбор. Попробуйте снова.");
@@ -121,6 +125,16 @@ public class Main {
             System.out.println("Файл успешно сохранен");
         } catch (IOException e){
             System.out.println("Ошибка записи файла: " + e.getMessage());
+        }
+    }
+    private static void handleCreateNewFile(Scanner scanner){
+        System.out.println("Введите путь к файлу");
+        String fileName = scanner.nextLine();
+        try {
+            fileManager.createNewFile(fileName);
+            System.out.println("Файл успешно создан");
+        } catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 }

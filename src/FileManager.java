@@ -85,6 +85,19 @@ public class FileManager {
         }
     }
 
+    public void createNewFile(String newFileName) throws Exception{
+
+            File newFile = new File(newFileName);
+            if (newFile.createNewFile()) {
+                System.out.println("Файл создан." );
+            }
+            else
+            {
+                throw new Exception("Ошибка при создании файла!"); //
+            }
+
+    }
+
     public User searchUser(String name) {
         return userData.getUser(name);
     }
