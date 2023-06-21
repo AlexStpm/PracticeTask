@@ -5,6 +5,14 @@ public class User {
     private String sex;
     private String address;
 
+    public User(String name, int age, String phoneNumber, String sex, String address){
+        this.name = name;
+        this.age = age;
+        this.phoneNumber = phoneNumber;
+        this.sex = sex;
+        this.address = address;
+    }
+
     public String getName() {
         return name;
     }
@@ -13,7 +21,7 @@ public class User {
         return age;
     }
 
-    public String getPhone() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
