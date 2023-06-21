@@ -35,6 +35,7 @@ public class UserData {
         for (User user : users) {
             if (user.getName().equalsIgnoreCase(name)){
                 users.remove(user);
+                System.out.println("Пользователь удалён");
                 return;
             }
         }

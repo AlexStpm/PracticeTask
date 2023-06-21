@@ -99,7 +99,9 @@ public class Main {
     }
 
     private static void handleRemoveUser(Scanner scanner) {
-
+        System.out.println("Введите имя");
+        String name = scanner.nextLine();
+        fileManager.removeUser(name);
     }
 
     private static void handleSaveFile() {
