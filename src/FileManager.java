@@ -20,8 +20,12 @@ public class FileManager {
         try {
             reader = new BufferedReader(new FileReader(file));
             String line;
-
-            int fileChecksum = Integer.parseInt(reader.readLine());
+            String checksumLine= reader.readLine();
+            if (checksumLine == null) {
+                this.fileName=fileName;
+                return;
+            }
+            int fileChecksum = Integer.parseInt(checksumLine);
             Map<String, User> userMap = new HashMap<>();
             while((line = reader.readLine()) != null) {
                 String[] fields = line.split(";");
