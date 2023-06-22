@@ -20,7 +20,7 @@ public class FileManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             String checksumLine = reader.readLine();
-            if (checksumLine == null) {
+            if (checksumLine == null) {     //Если файл пустой
                 this.fileName = fileName;
                 return;
             }
@@ -65,9 +65,11 @@ public class FileManager {
         return checksum;
     }
 
-    public void saveFileAs(String newFileName) throws IOException {
+    public void saveFileAs(String newFileName) throws IOException, SaveFileException {
+        if (fileName == null) {
+            throw new SaveFileException("Нет открытых файлов.");
+        }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFileName))) {
-
             int calculatedChecksum = calculateChecksum(userData.getAllUsers());
             writer.write(String.valueOf(calculatedChecksum));
             writer.newLine();
@@ -86,12 +88,7 @@ public class FileManager {
         System.out.println("Файл успешно сохранен");
     }
     public void saveFile() throws IOException, SaveFileException {
-        if (fileName != null) {
-            saveFileAs(fileName);
-        }
-        else {
-            throw new SaveFileException("Нет открытых файлов.");
-        }
+        saveFileAs(fileName);
     }
 
     public void createNewFile(String newFileName) throws Exception{

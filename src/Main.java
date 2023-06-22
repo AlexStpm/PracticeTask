@@ -131,11 +131,12 @@ public class Main {
         String fileName = scanner.nextLine();
         try {
             fileManager.saveFileAs(fileName);
-        } catch (IOException e){
+        } catch (Exception e){
             System.out.println("Ошибка записи файла: " + e.getMessage());
             log.warning("Ошибка записи файла: " + e);
         }
     }
+
     private static void handleCreateNewFile(Scanner scanner){
         System.out.println("Введите путь к файлу");
         String fileName = scanner.nextLine();

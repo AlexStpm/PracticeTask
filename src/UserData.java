@@ -44,7 +44,6 @@ public class UserData {
         }
         System.out.println("Пользователь с таким именем не существует");
         log.info("Пользователь с таким именем не существует");
-
     }
 
     public void removeAllUsers(){
