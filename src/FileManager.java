@@ -1,12 +1,14 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FileManager {
     private String fileName;
-    private String checksum;
     private UserData userData;
     public FileManager(){
         this.fileName = null;
-        this.checksum = null;
         this.userData = new UserData();
     }
     public void loadFile(String fileName) throws IOException, Exception {
@@ -19,17 +21,12 @@ public class FileManager {
             reader = new BufferedReader(new FileReader(file));
             String line;
 
-            line = reader.readLine();
-            int calculatedChecksum = 1563328060; //добавить функцию для вычисления checksum
-            if (line == null || !line.equals(String.valueOf(calculatedChecksum))) {
-                throw new Exception("Контрольная сумма не совпадает"); //добавить своё исключение
-            }
-            checksum = line;
-
+            int fileChecksum = Integer.parseInt(reader.readLine());
+            Map<String, User> userMap = new HashMap<>();
             while((line = reader.readLine()) != null) {
                 String[] fields = line.split(";");
                 if (fields.length != 5) {
-                    throw new Exception("Формат файла поврежден"); //добавить своё исключение
+                    throw new Exception("Формат файла поврежден"); //добавить своё исключение + логирование
                 }
 
                 String name = fields[0].trim();
@@ -39,13 +36,23 @@ public class FileManager {
                 String address = fields[4].trim();
 
                 if(!(sex.equals("MALE") || sex.equals("FEMALE"))){
-                    throw new Exception("Неверный формат поля \"ПОЛ\""); //добавить своё исключение
+                    throw new Exception("Неверный формат поля \"ПОЛ\""); //добавить своё исключение + логирование
                 }
-
                 User user = new User(name, age, phoneNumber, sex, address);
-                userData.addUser(user);
+                if (userMap.containsKey(name)) {
+                    System.out.println("Найден пользователь с одинаковым ФИО: " + name); //добавить логирование
+                }
+                userMap.put(name, user);
+                //userList.add(user);
+            }
+            int calculatedChecksum = calculateChecksum(new ArrayList<>(userMap.values()));
+            if (fileChecksum!=calculatedChecksum) {
+                throw new Exception("Контрольная сумма не совпадает"); //добавить своё исключение + логирование
             }
             this.fileName = fileName;
+            for (User user : new ArrayList<>(userMap.values())){
+                this.userData.addUser(user);
+            }
         }
         finally {
             if (reader != null){
@@ -54,12 +61,20 @@ public class FileManager {
         }
     }
 
+    private int calculateChecksum(List<User> users) {
+        int checksum = 0;
+        for (User user : users) {
+            checksum += user.hashCode();
+        }
+        return checksum;
+    }
+
     public void saveFileAs(String newFileName) throws IOException {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(newFileName));
 
-            int calculatedChecksum = 1563328060; //добавить функцию для вычисления checksum
+            int calculatedChecksum = calculateChecksum(userData.getAllUsers());
             writer.write(String.valueOf(calculatedChecksum));
             writer.newLine();
 
@@ -68,7 +83,7 @@ public class FileManager {
                 writer.write(user.getAge() + ";");
                 writer.write(user.getPhoneNumber() + ";");
                 writer.write(user.getSex() + ";");
-                writer.write(user.getAddress());
+                writer.write(user.getAddress() + ";");
                 writer.newLine();
             }
             fileName = newFileName;

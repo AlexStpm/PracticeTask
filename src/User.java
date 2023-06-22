@@ -40,4 +40,15 @@ public class User {
                 "Пол = " + sex + "\n" +
                 "Адрес = " + address);
     }
+
+    @Override
+    public int hashCode() {
+        int result = 0;
+        result = result + name.hashCode();
+        result = result + age;
+        result = result + phoneNumber.hashCode();
+        result = result + sex.hashCode();
+        result = result + address.hashCode();
+        return result;
+    }
 }
