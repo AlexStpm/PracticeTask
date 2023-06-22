@@ -55,7 +55,6 @@ public class Main {
         String fileName = scanner.nextLine();
         try {
             fileManager.loadFile(fileName);
-            System.out.println("Файл успешно загружен.");
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
             log.warning("Ошибка чтения файла: " + e);
@@ -97,9 +96,8 @@ public class Main {
 
             System.out.println("Введите адрес");
             String address = scanner.nextLine();
-
             fileManager.addUser(name, age, phoneNumber, sex, address);
-            System.out.println("Пользователь создан");
+
         }
         catch (InputMismatchException e){
             System.out.println("Ошибка ввода.");
@@ -121,8 +119,8 @@ public class Main {
     private static void handleSaveFile() {
         try {
             fileManager.saveFile();
-            System.out.println("Файл успешно сохранен");
-        } catch (IOException e){
+
+        } catch (Exception e){
             System.out.println("Ошибка записи файла: " + e.getMessage());
             log.warning("Ошибка записи файла: " + e);
         }
@@ -133,7 +131,6 @@ public class Main {
         String fileName = scanner.nextLine();
         try {
             fileManager.saveFileAs(fileName);
-            System.out.println("Файл успешно сохранен");
         } catch (IOException e){
             System.out.println("Ошибка записи файла: " + e.getMessage());
             log.warning("Ошибка записи файла: " + e);
@@ -144,7 +141,6 @@ public class Main {
         String fileName = scanner.nextLine();
         try {
             fileManager.createNewFile(fileName);
-            System.out.println("Файл успешно создан");
         } catch (Exception e){
             System.out.println("Ошибка при создании файла: " + e.getMessage());
             log.warning("Ошибка при создании файла: " + e);

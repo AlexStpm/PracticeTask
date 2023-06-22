@@ -1,8 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class FileManager {
@@ -57,6 +54,7 @@ public class FileManager {
                 this.userData.addUser(user);
             }
         }
+        System.out.println("Файл успешно загружен.");
     }
 
     private int calculateChecksum(List<User> users) {
@@ -82,20 +80,49 @@ public class FileManager {
                 writer.write(user.getAddress() + ";");
                 writer.newLine();
             }
-            fileName = newFileName;
+            fileName = null;
+            userData.removeAllUsers();
         }
+        System.out.println("Файл успешно сохранен");
     }
-    public void saveFile() throws IOException {
+    public void saveFile() throws IOException, SaveFileException {
         if (fileName != null) {
             saveFileAs(fileName);
+        }
+        else {
+            throw new SaveFileException("Нет открытых файлов.");
         }
     }
 
     public void createNewFile(String newFileName) throws Exception{
+        if (fileName == null) {
             File newFile = new File(newFileName);
             if (!newFile.createNewFile()) {
                 throw new Exception("Ошибка при создании файла!");
             }
+            fileName = newFileName;
+            System.out.println("Файл успешно создан");
+        }
+        else {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("При создании нового файла все изменения в текущем (" + fileName + ") будут потеряны!\nПродолжить? (y/n)\n");
+            while(true) {
+                String input = scanner.nextLine();
+                switch (input) {
+                    case "y", "Y" -> {
+                        fileName = null;
+                        userData.removeAllUsers();
+                        createNewFile(newFileName);
+                        return;
+                    }
+                    case "n", "N" -> {
+                        return;
+                    }
+                    default -> System.out.println("Продолжить? (y/n)\n");
+                }
+            }
+
+        }
     }
 
     public User searchUser(String name) {
@@ -125,6 +152,7 @@ public class FileManager {
 
         User user = new User(name, age, phoneNumber, sex, address);
         userData.addUser(user);
+        System.out.println("Пользователь создан");
     }
 
     public void removeUser(String name) {
@@ -139,6 +167,12 @@ class ChecksumException extends Exception{
 
 class FileFormatException extends Exception{
     public FileFormatException(String s){
+        super(s);
+    }
+}
+
+class SaveFileException extends Exception{
+    public SaveFileException(String s){
         super(s);
     }
 }

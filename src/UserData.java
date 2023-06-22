@@ -46,4 +46,8 @@ public class UserData {
         log.info("Пользователь с таким именем не существует");
 
     }
+
+    public void removeAllUsers(){
+        users.clear();
+    }
 }
