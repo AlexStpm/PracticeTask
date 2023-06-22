@@ -11,32 +11,41 @@ public class Main {
         Log.addFileHandler();
         fileManager = new FileManager();
         Scanner scanner = new Scanner(System.in);
+        int wrongCommandCounter = 0;
         while (true) {
             System.out.println("""
-                    Выберите действие:
-                    1. LOADFILE
-                    2. SEARCH
-                    3. ADDUSER
-                    4. REMOVEUSER
-                    5. SAVEFILE
-                    6. SAVEFILEAS
-                    7. NEWFILE
-                    8. EXIT
+                    Список доступных комманд:
+                     LOADFILE
+                     SEARCH
+                     ADDUSER
+                     REMOVEUSER
+                     SAVEFILE
+                     SAVEFILEAS
+                     NEWFILE
+                     EXIT
                     Ваш выбор:\s""");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            String choice = scanner.nextLine();
+
 
             switch (choice) {
-                case 1 -> handleLoadFile(scanner);
-                case 2 -> handleSearch(scanner);
-                case 3 -> handleAddUser(scanner);
-                case 4 -> handleRemoveUser(scanner);
-                case 5 -> handleSaveFile();
-                case 6 -> handleSaveFileAs(scanner);
-                case 7 -> handleCreateNewFile(scanner);
-                case 8 -> { return; }
-                default -> System.out.println("Некорректный выбор. Попробуйте снова.");
+                case "LOADFILE" -> handleLoadFile(scanner);
+                case "SEARCH" -> handleSearch(scanner);
+                case "ADDUSER" -> handleAddUser(scanner);
+                case "REMOVEUSER" -> handleRemoveUser(scanner);
+                case "SAVEFILE" -> handleSaveFile();
+                case "SAVEFILEAS" -> handleSaveFileAs(scanner);
+                case "NEWFILE" -> handleCreateNewFile(scanner);
+                case "EXIT" -> { return; }
+                default -> {
+                    if (wrongCommandCounter < 3){
+                        System.out.println("Некорректный выбор. Попробуйте снова.");
+                        wrongCommandCounter++;
+                    }
+                    else{
+                        return;
+                    }
+                }
             }
         }
     }
