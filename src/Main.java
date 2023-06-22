@@ -1,53 +1,42 @@
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class Main {
     private static FileManager fileManager;
+    private static final Logger log =
+            Logger.getLogger(FileManager.class.getName());
     public static void main(String[] args) {
+        Log.addFileHandler();
         fileManager = new FileManager();
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("Выберите действие:\n" +
-                    "1. LOADFILE\n" +
-                    "2. SEARCH\n" +
-                    "3. ADDUSER\n" +
-                    "4. REMOVEUSER\n" +
-                    "5. SAVEFILE\n" +
-                    "6. SAVEFILEAS\n" +
-                    "7. NEWFILE\n" +
-                    "8. EXIT\n" +
-                    "Ваш выбор: ");
+            System.out.println("""
+                    Выберите действие:
+                    1. LOADFILE
+                    2. SEARCH
+                    3. ADDUSER
+                    4. REMOVEUSER
+                    5. SAVEFILE
+                    6. SAVEFILEAS
+                    7. NEWFILE
+                    8. EXIT
+                    Ваш выбор:\s""");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
 
             switch (choice) {
-                case 1:
-                    handleLoadFile(scanner);
-                    break;
-                case 2:
-                    handleSearch(scanner);
-                    break;
-                case 3:
-                    handleAddUser(scanner);
-                    break;
-                case 4:
-                    handleRemoveUser(scanner);
-                    break;
-                case 5:
-                    handleSaveFile();
-                    break;
-                case 6:
-                    handleSaveFileAs(scanner);
-                    break;
-                case 7:
-                    handleCreateNewFile(scanner);
-                    break;
-                case 8:
-                    return;
-                default:
-                    System.out.println("Некорректный выбор. Попробуйте снова.");
-                    break;
+                case 1 -> handleLoadFile(scanner);
+                case 2 -> handleSearch(scanner);
+                case 3 -> handleAddUser(scanner);
+                case 4 -> handleRemoveUser(scanner);
+                case 5 -> handleSaveFile();
+                case 6 -> handleSaveFileAs(scanner);
+                case 7 -> handleCreateNewFile(scanner);
+                case 8 -> { return; }
+                default -> System.out.println("Некорректный выбор. Попробуйте снова.");
             }
         }
     }
@@ -60,8 +49,10 @@ public class Main {
             System.out.println("Файл успешно загружен.");
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
+            log.warning("Ошибка чтения файла: " + e);
         } catch (Exception e) {
-            System.out.println("Другая ошибка: " + e.getMessage());//будут другие исключения
+            System.out.println("Ошибка при чтении файла: " + e.getMessage());
+            log.warning("Ошибка при чтении файла: " + e);
         }
     }
 
@@ -75,30 +66,40 @@ public class Main {
         }
         else {
             System.out.println("Пользователь не найден");
+            log.info("SEARCHUSER: Пользователь не найден");
         }
     }
 
     private static void handleAddUser(Scanner scanner) {
-        System.out.println("Введите имя");
-        String name = scanner.nextLine();
 
-        System.out.println("Введите возраст");
-        int age = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.println("Введите телефон");
-        String phoneNumber = scanner.nextLine();
-
-        System.out.println("Введите пол: MALE или FEMALE");
-        String sex = scanner.nextLine().toUpperCase();
-
-        System.out.println("Введите адрес");
-        String address = scanner.nextLine();
         try{
+            System.out.println("Введите имя");
+            String name = scanner.nextLine();
+
+            System.out.println("Введите возраст");
+            int age = scanner.nextInt();
+            scanner.nextLine();
+
+            System.out.println("Введите телефон");
+            String phoneNumber = scanner.nextLine();
+
+            System.out.println("Введите пол: MALE или FEMALE");
+            String sex = scanner.nextLine().toUpperCase();
+
+            System.out.println("Введите адрес");
+            String address = scanner.nextLine();
+
             fileManager.addUser(name, age, phoneNumber, sex, address);
             System.out.println("Пользователь создан");
-        }catch (Exception e){
-            System.out.printf("Ошибка:" + e.getMessage());
+        }
+        catch (InputMismatchException e){
+            System.out.println("Ошибка ввода.");
+            scanner.nextLine();
+            log.warning("ADDUSER: Ошибка ввода.");
+        }
+        catch (Exception e){
+            System.out.println("Ошибка при создании пользователя: " + e.getMessage());
+            log.warning("Ошибка при создании пользователя:" + e);
         }
     }
 
@@ -114,6 +115,7 @@ public class Main {
             System.out.println("Файл успешно сохранен");
         } catch (IOException e){
             System.out.println("Ошибка записи файла: " + e.getMessage());
+            log.warning("Ошибка записи файла: " + e);
         }
     }
 
@@ -125,6 +127,7 @@ public class Main {
             System.out.println("Файл успешно сохранен");
         } catch (IOException e){
             System.out.println("Ошибка записи файла: " + e.getMessage());
+            log.warning("Ошибка записи файла: " + e);
         }
     }
     private static void handleCreateNewFile(Scanner scanner){
@@ -134,7 +137,8 @@ public class Main {
             fileManager.createNewFile(fileName);
             System.out.println("Файл успешно создан");
         } catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.println("Ошибка при создании файла: " + e.getMessage());
+            log.warning("Ошибка при создании файла: " + e);
         }
     }
 }

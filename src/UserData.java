@@ -1,9 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 
 public class UserData {
     private List<User> users;
-
+    private static final Logger log =
+            Logger.getLogger(FileManager.class.getName());
     public UserData(){
         users = new ArrayList<>();
     }
@@ -25,21 +28,22 @@ public class UserData {
         for (User user : users) {
             if (user.getName().equalsIgnoreCase(userToAdd.getName())){
                 System.out.println("Пользователь с таким именем уже существует");
-                //логирование
+                log.info("Пользователь с таким именем уже существует");
                 return;
             }
-        }
+            }
         users.add(userToAdd);
     }
     public void removeUser(String name){
         for (User user : users) {
             if (user.getName().equalsIgnoreCase(name)){
                 users.remove(user);
-                System.out.println("Пользователь удалён");
+                System.out.println("Пользователь "+user.getName()+ " удалён");
                 return;
             }
         }
         System.out.println("Пользователь с таким именем не существует");
-        //логирование
+        log.info("Пользователь с таким именем не существует");
+
     }
 }

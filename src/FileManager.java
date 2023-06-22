@@ -3,34 +3,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class FileManager {
     private String fileName;
     private UserData userData;
+
+    private static final Logger log =
+            Logger.getLogger(FileManager.class.getName());
     public FileManager(){
         this.fileName = null;
         this.userData = new UserData();
     }
-    public void loadFile(String fileName) throws IOException, Exception {
+    public void loadFile(String fileName) throws IOException, ChecksumException, FileFormatException {
         File file = new File(fileName);
         if (!file.exists()){
             throw new FileNotFoundException("Файл не найден");
         }
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            String checksumLine= reader.readLine();
+            String checksumLine = reader.readLine();
             if (checksumLine == null) {
-                this.fileName=fileName;
+                this.fileName = fileName;
                 return;
             }
             int fileChecksum = Integer.parseInt(checksumLine);
             Map<String, User> userMap = new HashMap<>();
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 String[] fields = line.split(";");
                 if (fields.length != 5) {
-                    throw new Exception("Формат файла поврежден"); //добавить своё исключение + логирование
+                    throw new FileFormatException("Формат файла поврежден");
                 }
 
                 String name = fields[0].trim();
@@ -39,28 +41,20 @@ public class FileManager {
                 String sex = fields[3].trim();
                 String address = fields[4].trim();
 
-                if(!(sex.equals("MALE") || sex.equals("FEMALE"))){
-                    throw new Exception("Неверный формат поля \"ПОЛ\""); //добавить своё исключение + логирование
-                }
                 User user = new User(name, age, phoneNumber, sex, address);
                 if (userMap.containsKey(name)) {
-                    System.out.println("Найден пользователь с одинаковым ФИО: " + name); //добавить логирование
+                    System.out.println("Найден пользователь с одинаковым ФИО: " + name);
+                    log.info("Найден пользователь с одинаковым ФИО: " + name);
                 }
                 userMap.put(name, user);
-                //userList.add(user);
             }
             int calculatedChecksum = calculateChecksum(new ArrayList<>(userMap.values()));
-            if (fileChecksum!=calculatedChecksum) {
-                throw new Exception("Контрольная сумма не совпадает"); //добавить своё исключение + логирование
+            if (fileChecksum != calculatedChecksum) {
+                throw new ChecksumException("Контрольная сумма не совпадает");
             }
             this.fileName = fileName;
-            for (User user : new ArrayList<>(userMap.values())){
+            for (User user : new ArrayList<>(userMap.values())) {
                 this.userData.addUser(user);
-            }
-        }
-        finally {
-            if (reader != null){
-                reader.close();
             }
         }
     }
@@ -74,9 +68,7 @@ public class FileManager {
     }
 
     public void saveFileAs(String newFileName) throws IOException {
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(newFileName));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFileName))) {
 
             int calculatedChecksum = calculateChecksum(userData.getAllUsers());
             writer.write(String.valueOf(calculatedChecksum));
@@ -92,11 +84,6 @@ public class FileManager {
             }
             fileName = newFileName;
         }
-        finally {
-            if (writer != null){
-                writer.close();
-            }
-        }
     }
     public void saveFile() throws IOException {
         if (fileName != null) {
@@ -105,30 +92,37 @@ public class FileManager {
     }
 
     public void createNewFile(String newFileName) throws Exception{
-
             File newFile = new File(newFileName);
-            if (newFile.createNewFile()) {
-                System.out.println("Файл создан." );
+            if (!newFile.createNewFile()) {
+                throw new Exception("Ошибка при создании файла!");
             }
-            else
-            {
-                throw new Exception("Ошибка при создании файла!"); //
-            }
-
     }
 
     public User searchUser(String name) {
         return userData.getUser(name);
     }
 
-    public void addUser(String name, int age, String phoneNumber, String sex, String address)throws Exception {
-        if (name.isEmpty() || age <= 0 || phoneNumber.isEmpty() || sex.isEmpty() || address.isEmpty() ||
-        name.contains(";") || phoneNumber.contains(";") || sex.contains(";") || address.contains(";")){
-            throw new Exception("Неверный ввод!");
+    public void addUser(String name, int age, String phoneNumber, String sex, String address)throws IOException {
+        if (name.isEmpty()||name.contains(";")){
+            throw new IOException("Неверный формат поля \"ФИО\".");
         }
+
+        if (age <= 0 ){
+            throw new IOException("Неверный формат поля \"возраст\".");
+        }
+
+        if (phoneNumber.isEmpty() || phoneNumber.contains(";")){
+            throw new IOException("Неверный формат поля \"номер телефона\".");
+        }
+
         if(!(sex.equals("MALE") || sex.equals("FEMALE"))){
-            throw new Exception("Неверный формат поля \"ПОЛ\""); //добавить своё исключение
+            throw new IOException("Неверный формат поля \"ПОЛ\"."); //добавить своё исключение
         }
+
+        if ( address.isEmpty() || address.contains(";")){
+            throw new IOException("Неверный формат поля \"адресс\".");
+        }
+
         User user = new User(name, age, phoneNumber, sex, address);
         userData.addUser(user);
     }
@@ -137,3 +131,16 @@ public class FileManager {
         userData.removeUser(name);
     }
 }
+class ChecksumException extends Exception{
+    public ChecksumException(String s){
+        super(s);
+    }
+}
+
+class FileFormatException extends Exception{
+    public FileFormatException(String s){
+        super(s);
+    }
+}
+
+
